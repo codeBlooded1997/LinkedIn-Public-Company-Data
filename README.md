@@ -6,6 +6,7 @@
 <h3>Scraping🕷 and autoamtion🔄 BOTs for Linkedin website.</h3>
 
 <p>Invitation bot which sends custom invitation to all of the users who are suggested by Linkedin itself.</p>
+<p>Scraper bot capable of scraping user data such as general, educational and experience information</p>
 <ol>
 		<li>💾Saving all suggested users ID who has been invited in a text file</li>
 		<li>✅Will not crash if the suggested user is in our friends list.</li>
