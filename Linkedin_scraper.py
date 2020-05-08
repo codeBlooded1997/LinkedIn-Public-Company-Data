@@ -77,8 +77,6 @@ soup = BeautifulSoup(src, 'lxml')
 
 # Navigating to target data section
 general_info_section = soup.find('div', {'class':'ph5 pb5'}).find('div', {'class':'flex-1 mr5'})
-print(general_info_section)
-
 # Exctracting user's name
 name = general_info_section.find('ul', {'class':'pv-top-card--list inline-flex align-items-center'}).findAll('li')[0]
 name = name.text.strip()
@@ -98,6 +96,9 @@ info.append(name)
 info.append(profile_title)
 info.append(location)
 info.append(connections)
+
+for item in info:
+    print(item)
 
 # Extracting users experience data
 experience_list = soup.find('section', {'id': 'experience-section'}).find('ul').findAll('li')
