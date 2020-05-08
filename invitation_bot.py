@@ -64,7 +64,9 @@ driver.get(fullLink)
 visited_profiles = []
 profilesQueued = []
 
-
+"""
+Gets new user IDs and returning list containing IDs
+"""
 def getNewProfilesIDs(soup, profilesQueued):
     profilesID = []
     pav = soup.find('section', {
