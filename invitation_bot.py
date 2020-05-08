@@ -142,6 +142,7 @@ while profilesQueued:
         print('error')
         print(e)
         try:
+            # Creating soup object to extract new suggested users on the page.
             soup = BeautifulSoup(driver.page_source)
             new_users = getNewProfilesIDs(soup, profilesQueued)
             print(new_users)
