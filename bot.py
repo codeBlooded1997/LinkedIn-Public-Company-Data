@@ -72,21 +72,28 @@ class Linkedin_Bot():
 
 
 
-    def soup_maker(self):
+    def go_to_admin(self):
         """
-        Makes a soup object of current page in the browser.
+        This method navigates to admin_user's profile to
+        be able to extract the list of suggested users.
         """
-        soup = BeautifulSoup(self.browser.page_source)
-        return soup
+        # ID we are going to visit.
+        visitingProfileID = '/in/arian-aghnaei-6633471a0/'
+        # Constructing link
+        fullLink = 'https://www.linkedin.com' + visitingProfileID
+        # Directing to profile page using ID
+        self.browser.get(fullLink)
+        # driver.maximize_window()
 
 
 
 
-    def getNewProfilesIDs(self, soup, profilesQueued):
+    def getNewProfilesIDs(self, profilesQueued):
         """
         Gets new user IDs and returning list containing IDs
         """
         profilesID = []
+        soup = BeautifulSoup(self.browser.page_source)
         pav = soup.find('section', {'class': 'pv-profile-section pv-browsemap-section profile-section artdeco-container-card ember-view'})
         all_links = pav.findAll('a', {'class', 'pv-browsemap-section__member ember-view'})
         for link in all_links:
@@ -105,3 +112,8 @@ time.sleep(5)
 
 bot.login()
 time.sleep(random.randint(3, 5))
+
+bot.go_to_admin()
+
+list = bot.getNewProfilesIDs(profilesQueued)
+print(list)
