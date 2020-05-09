@@ -28,6 +28,7 @@ visited_profiles = []
 
 class Linkedin_Bot():
 
+
     def __init__(self, csvpath='/Users/arian/Desktop'):
         """
         By creating an instance of this class a chromedriver
@@ -93,7 +94,7 @@ class Linkedin_Bot():
         Gets new user IDs and returning list containing IDs
         """
         profilesID = []
-        soup = BeautifulSoup(self.browser.page_source)
+        soup = BeautifulSoup(self.browser.page_source, 'lxml')
         pav = soup.find('section', {'class': 'pv-profile-section pv-browsemap-section profile-section artdeco-container-card ember-view'})
         all_links = pav.findAll('a', {'class', 'pv-browsemap-section__member ember-view'})
         for link in all_links:
@@ -105,7 +106,73 @@ class Linkedin_Bot():
 
 
 
-    #def profile_
+    def scroll_page(self):
+        """
+        Using this method the BOT can scroll the page.
+        """
+
+        SCROLL_PAUSE_TIME = 5
+
+        # Get scroll height
+        last_height = self.browser.execute_script("return document.body.scrollHeight")
+
+        for i in range(3):
+            # Scroll down to bottom
+            self.browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+            # Wait to load page
+            time.sleep(SCROLL_PAUSE_TIME)
+
+            # Calculate new scroll height and compare with last scroll height.
+            new_height = self.browser.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+
+
+
+    def visit_profile(self, profilesQueued):
+        """
+        This method is going to visit the extracted user's profiles
+        """
+        # Getting one of users IDs in the list.
+        visitingProfileID = profilesQueued.pop()
+        # Appending user ID to visitedProfile list.
+        visited_profiles.append(visitingProfileID)
+        # Construct full url to GET to.
+        full_link = 'https://www.linkedin.com' + visitingProfileID
+        # Getting to users page
+        self.browser.get(full_link)
+
+        self.browser.maximize_window()
+
+
+    def scrape_general_info(self):
+        """
+        Creating soup object to scrape user's profile.
+        """
+        src = self.browser.page_source
+        soup = BeautifulSoup(src, 'lxml')
+
+        # Navigating to target data section
+        general_info_section = soup.find('div', {'class': 'ph5 pb5'}).find('div', {'class': 'flex-1 mr5'})
+        # Exctracting user's name
+        name = \
+        general_info_section.find('ul', {'class': 'pv-top-card--list inline-flex align-items-center'}).findAll('li')[0]
+        name = name.text.strip()
+        # Extracting user's profile title.
+        profile_title = general_info_section.find('h2')
+        profile_title = profile_title.text.strip()
+        # Extracting user's location
+        location = \
+        general_info_section.find('ul', {'class': 'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[0]
+        location = location.text.strip()
+        # Extracting number of connections
+        connections = \
+        general_info_section.find('ul', {'class': 'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[1]
+        connections = connections.text.strip()
+
+
 
 bot = Linkedin_Bot()
 time.sleep(5)
@@ -115,5 +182,5 @@ time.sleep(random.randint(3, 5))
 
 bot.go_to_admin()
 
-list = bot.getNewProfilesIDs(profilesQueued)
-print(list)
+profilesQueued = bot.getNewProfilesIDs(profilesQueued)
+print(profilesQueued)
