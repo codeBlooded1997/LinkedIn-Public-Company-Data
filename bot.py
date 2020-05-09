@@ -171,13 +171,110 @@ class Linkedin_Bot():
         connections = \
         general_info_section.find('ul', {'class': 'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[1]
         connections = connections.text.strip()
-        info = []
-        #info.append(link)
-        info.append(name)
-        info.append(profile_title)
-        info.append(location)
-        info.append(connections)
-        return info
+
+        print("User Name: ", name)
+        print("Profile title: ", profile_title)
+        print("Location: ", location)
+        print("Connections: ", connections)
+        print()
+
+        general_info = {}
+        general_info['User Name'] = name
+        general_info['Profile Title'] = profile_title
+        general_info['Location'] = location
+        general_info['Connections'] = connections
+
+        return general_info
+
+    def experience_scraper(self):
+        total_experience_info = {}
+        src = self.browser.page_source
+        soup = BeautifulSoup(src, 'lxml')
+        # selecting elements more specificly.
+        selector = '#experience-section > ul > li > section > div > div > a.ember-view'
+        experience_section = soup.select(selector)
+        experience_counter = 1
+        for experience in experience_section:
+            print("Experience NO. {}".format(experience_counter))
+            # Extracting job title.
+            job_title = experience.find('h3').text.strip()
+            company_name = experience.findAll('p')[-1].text.strip().split('\n')[0]
+            employement_type = experience.findAll('p')[-1].text.strip().split('\n')[-1].strip()
+            dates = experience.find('div', {'class': 'display-flex'}).findAll('h4')[0].findAll('span')[-1].text.strip()
+            duration = experience.find('div', {'class': 'display-flex'}).findAll('h4')[-1].findAll('span')[
+                -1].text.strip()
+            company_location = \
+            experience.find('h4', {'class': 'pv-entity__location t-14 t-black--light t-normal block'}).findAll('span')[
+                -1].text.strip()
+
+            print("Job Title: ", job_title)
+            print("Company Name: ", company_name)
+            print("Employement Type: ", employement_type)
+            print("From {} To {}".format(dates.split('–')[0], dates.split('–')[1]))
+            print("Duration: ", duration)
+            print("Company Location: ", company_location)
+            print()
+
+            # Creating a dictionary for saving extracted experience detail that scraped from user profile
+            experience_info = {}
+            experience_info['Job Title'] = job_title
+            experience_info['Company Name'] = company_name
+            experience_info['Employement Type'] = employement_type
+            experience_info['Dates'] = dates
+            experience_info['Duration'] = duration
+            experience_info['Company Location'] = company_location
+            # Appending job details to bigger dictionary.
+            total_experience_info['Experience NO. {}'.format(experience_counter)] = experience_info
+
+            experience_counter += 1
+
+        return total_experience_info
+
+
+    def education_data_scraper(self):
+        total_education_info = {}
+        src = self.browser.page_source
+        soup = BeautifulSoup(src, 'lxml')
+        # Navigating to education data section (Creating hook to ease in locating elements)
+        education_list = soup.find('section', {'id': 'education-section'}).find('ul').findAll('li')
+        education_counter = 1
+        for educatoin in education_list:
+            print("Education NO. ", education_counter)
+            info_section = educatoin.find('div', {
+                'class': 'pv-entity__summary-info pv-entity__summary-info--background-section'})
+            educational_center = info_section.find('div', {'class': 'pv-entity__degree-info'}).find('h3').text.strip()
+            degree_name = info_section.find('div', {'class': 'pv-entity__degree-info'}).findAll('p')[0].findAll('span')[
+                -1].text.strip()
+            field_of_study = \
+            info_section.find('div', {'class': 'pv-entity__degree-info'}).findAll('p')[-1].findAll('span')[
+                -1].text.strip()
+            start_date = \
+            info_section.find('p', {'class': 'pv-entity__dates t-14 t-black--light t-normal'}).findAll('span')[
+                -1].findAll('time')[0].text.strip()
+            end_date = \
+            info_section.find('p', {'class': 'pv-entity__dates t-14 t-black--light t-normal'}).findAll('span')[
+                -1].findAll('time')[1].text.strip()
+
+            print("Educated at: ", educational_center)
+            print("Defree: ", degree_name)
+            print("Field of Study: ", field_of_study)
+            print("From {} to {}".format(start_date, end_date))
+            print()
+
+            education_info = {}
+            education_info['Educational Center'] = educational_center
+            education_info['Degree Name'] = degree_name
+            education_info['Filed of Study'] = field_of_study
+            education_info['Start Date'] = start_date
+            education_info['End Date'] = end_date
+
+            total_education_info['Education NO. {}'.format(education_counter)] = education_info
+
+            education_counter += 1
+
+        return total_education_info
+
+
 
 bot = Linkedin_Bot()
 time.sleep(5)
@@ -193,4 +290,21 @@ print(profilesQueued)
 bot.visit_profile(profilesQueued)
 
 info = bot.scrape_general_info()
-print(info)
+experience = bot.experience_scraper()
+education = bot.education_data_scraper()
+
+
+print('USER INFO')
+print(' '*10, "General Information")
+for key, value in info.items():
+    print(key, value)
+
+print()
+print(' '*10, "Experience Information")
+for key, value in experience.items():
+    print(key, value)
+
+print()
+print(' '*10, "Education Information")
+for key, value in education.items():
+    print(key, value)
