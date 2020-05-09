@@ -49,88 +49,108 @@ xp_submit = '//*[@id="app__container"]/main/div[2]/form[@class="login__form"]/di
 # Submiting (Clicking on button)
 submit_button = driver.find_element_by_xpath(xp_submit)
 submit_button.click()
+time.sleep(random.randint(5, 8))
 
-link = 'https://www.linkedin.com/in/harneetsingh160993/'
-driver.get(link)
 
-SCROLL_PAUSE_TIME = 5
 
-# Get scroll height
-last_height = driver.execute_script("return document.body.scrollHeight")
+#link = 'https://www.linkedin.com/in/harneetsingh160993/'
+links = ['https://www.linkedin.com/in/darshita-patel-4566b76b/', 'https://www.linkedin.com/in/harneetsingh160993/']
 
-for i in range(3):
-    # Scroll down to bottom
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+for link in links:
+    driver.get(link)
 
-    # Wait to load page
-    time.sleep(SCROLL_PAUSE_TIME)
+    SCROLL_PAUSE_TIME = 5
 
-    # Calculate new scroll height and compare with last scroll height.
-    new_height = driver.execute_script("return document.body.scrollHeight")
-    if new_height == last_height:
-        break
-    last_height = new_height
+    # Get scroll height
+    last_height = driver.execute_script("return document.body.scrollHeight")
 
-# Creating soup object
-src = driver.page_source
-soup = BeautifulSoup(src, 'lxml')
+    for i in range(3):
+        # Scroll down to bottom
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-# Navigating to target data section
-general_info_section = soup.find('div', {'class':'ph5 pb5'}).find('div', {'class':'flex-1 mr5'})
-# Exctracting user's name
-name = general_info_section.find('ul', {'class':'pv-top-card--list inline-flex align-items-center'}).findAll('li')[0]
-name = name.text.strip()
-# Extracting user's profile title.
-profile_title = general_info_section.find('h2')
-profile_title = profile_title.text.strip()
-# Extracting user's location
-location = general_info_section.find('ul', {'class':'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[0]
-location = location.text.strip()
-# Extracting number of connections
-connections = general_info_section.find('ul', {'class':'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[1]
-connections = connections.text.strip()
+        # Wait to load page
+        time.sleep(SCROLL_PAUSE_TIME)
 
-info = []
-info.append(link)
-info.append(name)
-info.append(profile_title)
-info.append(location)
-info.append(connections)
+        # Calculate new scroll height and compare with last scroll height.
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
 
-for item in info:
-    print(item)
+    # Creating soup object
+    src = driver.page_source
+    soup = BeautifulSoup(src, 'lxml')
 
-# Extracting users experience data
-experience_list = soup.find('section', {'id': 'experience-section'}).find('ul').findAll('li')
-# Iterating to scrape
-for experience in experience_list:
-    # Navigating to experience data section
-    info_section = experience.find('div',{'class': 'pv-entity__summary-info pv-entity__summary-info--background-section'})
-    # Scraping data...
-    job_title = info_section.find('h3').text.strip()
-    company_name = info_section.findAll('p')[-1].text.strip()
-    dates = info_section.find('div', {'class': 'display-flex'}).findAll('h4')[0].findAll('span')[-1].text.strip()
-    duration = info_section.find('div', {'class': 'display-flex'}).findAll('h4')[-1].findAll('span')[-1].text.strip()
-    company_location = info_section.find('h4', {'class': 'pv-entity__location t-14 t-black--light t-normal block'}).findAll('span')[-1].text.strip()
+    # Navigating to target data section
+    general_info_section = soup.find('div', {'class':'ph5 pb5'}).find('div', {'class':'flex-1 mr5'})
+    # Exctracting user's name
+    name = general_info_section.find('ul', {'class':'pv-top-card--list inline-flex align-items-center'}).findAll('li')[0]
+    name = name.text.strip()
+    # Extracting user's profile title.
+    profile_title = general_info_section.find('h2')
+    profile_title = profile_title.text.strip()
+    # Extracting user's location
+    location = general_info_section.find('ul', {'class':'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[0]
+    location = location.text.strip()
+    # Extracting number of connections
+    connections = general_info_section.find('ul', {'class':'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[1]
+    connections = connections.text.strip()
 
-    print(job_title)
-    print(company_name)
-    print(dates)
-    print(duration)
-    print(company_location)
+    info = []
+    info.append(link)
+    info.append(name)
+    info.append(profile_title)
+    info.append(location)
+    info.append(connections)
 
-# Navigating to education data section (Creating hook to ease in locating elements)
-education_list = soup.find('section', {'id': 'education-section'}).find('ul').findAll('li')
-for educatoin in education_list:
-    info_section = educatoin.find('div', {'class': 'pv-entity__summary-info pv-entity__summary-info--background-section'})
-    educational_center = info_section.find('div', {'class': 'pv-entity__degree-info'}).find('h3').text.strip()
-    degree_name = info_section.find('div', {'class': 'pv-entity__degree-info'}).findAll('p')[0].findAll('span')[-1].text.strip()
-    field_of_study = info_section.find('div', {'class': 'pv-entity__degree-info'}).findAll('p')[-1].findAll('span')[-1].text.strip()
-    start_date = info_section.find('p', {'class': 'pv-entity__dates t-14 t-black--light t-normal'}).findAll('span')[-1].findAll('time')[0].text.strip()
-    end_date = info_section.find('p', {'class': 'pv-entity__dates t-14 t-black--light t-normal'}).findAll('span')[-1].findAll('time')[1].text.strip()
+    for item in info:
+        print(item)
 
-    print(educational_center)
-    print(degree_name)
-    print(field_of_study)
-    print("From {} to {}".format(start_date, end_date))
-    print()
+    """
+    Using css selectors to navigate to general data sction.
+    """
+    src = driver.page_source
+    soup = BeautifulSoup(src, 'lxml')
+    # selecting elements more specificly.
+    selector = '#experience-section > ul > li > section > div > div > a.ember-view'
+    experience_section = soup.select(selector)
+    experience_counter = 1
+    for experience in experience_section:
+        print("Experience NO. {}".format(experience_counter))
+        # Extracting job title.
+        job_title = experience.find('h3').text.strip()
+        company_name = experience.findAll('p')[-1].text.strip().split('\n')[0]
+        employement_type = experience.findAll('p')[-1].text.strip().split('\n')[-1].strip()
+        dates = experience.find('div', {'class': 'display-flex'}).findAll('h4')[0].findAll('span')[-1].text.strip()
+        duration = experience.find('div', {'class': 'display-flex'}).findAll('h4')[-1].findAll('span')[-1].text.strip()
+        company_location = experience.find('h4', {'class': 'pv-entity__location t-14 t-black--light t-normal block'}).findAll('span')[-1].text.strip()
+        experience_counter += 1
+
+        print("Job Title: ", job_title)
+        print("Company Name: ", company_name)
+        print("Employement Type: ", employement_type)
+        print("From {} To {}".format(dates.split('–')[0], dates.split('–')[1]))
+        print("Duration: ", duration)
+        print("Company Location: ", company_location)
+        print()
+
+
+
+    # Navigating to education data section (Creating hook to ease in locating elements)
+    education_list = soup.find('section', {'id': 'education-section'}).find('ul').findAll('li')
+    education_counter = 1
+    for educatoin in education_list:
+        print("Education NO. ", education_counter)
+        info_section = educatoin.find('div', {'class': 'pv-entity__summary-info pv-entity__summary-info--background-section'})
+        educational_center = info_section.find('div', {'class': 'pv-entity__degree-info'}).find('h3').text.strip()
+        degree_name = info_section.find('div', {'class': 'pv-entity__degree-info'}).findAll('p')[0].findAll('span')[-1].text.strip()
+        field_of_study = info_section.find('div', {'class': 'pv-entity__degree-info'}).findAll('p')[-1].findAll('span')[-1].text.strip()
+        start_date = info_section.find('p', {'class': 'pv-entity__dates t-14 t-black--light t-normal'}).findAll('span')[-1].findAll('time')[0].text.strip()
+        end_date = info_section.find('p', {'class': 'pv-entity__dates t-14 t-black--light t-normal'}).findAll('span')[-1].findAll('time')[1].text.strip()
+        education_counter += 1
+
+        print("Educated at: ", educational_center)
+        print("Defree: ", degree_name)
+        print("Field of Study: ", field_of_study)
+        print("From {} to {}".format(start_date, end_date))
+        print()
