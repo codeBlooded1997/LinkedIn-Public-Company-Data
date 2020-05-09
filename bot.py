@@ -275,6 +275,11 @@ class Linkedin_Bot():
         return total_education_info
 
 
+    #def send_invitaion(self):
+    #    """
+    #    This method will send customized invitation to users.
+    #    """
+
 
 bot = Linkedin_Bot()
 time.sleep(5)
