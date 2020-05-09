@@ -171,8 +171,13 @@ class Linkedin_Bot():
         connections = \
         general_info_section.find('ul', {'class': 'pv-top-card--list pv-top-card--list-bullet mt1'}).findAll('li')[1]
         connections = connections.text.strip()
-
-
+        info = []
+        #info.append(link)
+        info.append(name)
+        info.append(profile_title)
+        info.append(location)
+        info.append(connections)
+        return info
 
 bot = Linkedin_Bot()
 time.sleep(5)
@@ -184,3 +189,8 @@ bot.go_to_admin()
 
 profilesQueued = bot.getNewProfilesIDs(profilesQueued)
 print(profilesQueued)
+
+bot.visit_profile(profilesQueued)
+
+info = bot.scrape_general_info()
+print(info)
